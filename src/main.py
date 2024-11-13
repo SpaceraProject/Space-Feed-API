@@ -13,8 +13,8 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 scheduler = BackgroundScheduler()
-INTERVAL:int = int(os.getenv("INTERVAL", 1))
-scheduler.add_job(check_rss, 'interval', seconds=INTERVAL+5, id='update_articles', replace_existing=True)
+INTERVAL:int = int(os.getenv("INTERVAL", 10))
+scheduler.add_job(check_rss, 'interval', minutes=INTERVAL, id='update_articles', replace_existing=True)
 if not scheduler.running:
     logger.info("Starting scheduler")
     scheduler.start()
@@ -32,10 +32,9 @@ app.add_middleware(
     allow_headers=["*"]
 )
 
-
 @app.get("/")
 async def root():
-    return {"message": last_articles}
+    return last_articles
 
 if __name__ == '__main__':
     uvicorn.run(app)
