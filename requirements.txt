@@ -1,0 +1,6 @@
+fastapi[standard]
+pydantic
+uvicorn
+feedparser
+beautifulsoup4
+apscheduler
