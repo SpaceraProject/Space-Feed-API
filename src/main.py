@@ -1,11 +1,15 @@
-from fastapi import FastAPI
-import uvicorn
-from fastapi.middleware.cors import CORSMiddleware
-from apscheduler.schedulers.background import BackgroundScheduler
-from utils import check_rss, last_articles
+"""
+Main module for the RESTAPI
+"""
 import logging
-from dotenv import load_dotenv
 import os
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+import uvicorn
+from apscheduler.schedulers.background import BackgroundScheduler
+from dotenv import load_dotenv
+from utils import check_rss, last_articles
+from models import Article
 
 load_dotenv()
 
@@ -13,8 +17,15 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 scheduler = BackgroundScheduler()
-INTERVAL:int = int(os.getenv("INTERVAL", 10))
-scheduler.add_job(check_rss, 'interval', minutes=INTERVAL, id='update_articles', replace_existing=True)
+INTERVAL:int = int(os.getenv("INTERVAL", "10"))
+scheduler.add_job(
+    check_rss,
+    'interval',
+    minutes=INTERVAL,
+    id='update_articles',
+    replace_existing=True
+    )
+
 if not scheduler.running:
     logger.info("Starting scheduler")
     scheduler.start()
@@ -33,8 +44,11 @@ app.add_middleware(
 )
 
 @app.get("/")
-async def root():
-    return last_articles
+async def root()-> list[Article]:
+    """
+    Get the last articles
+    """
+    return last_articles.values()
 
 if __name__ == '__main__':
     uvicorn.run(app)
