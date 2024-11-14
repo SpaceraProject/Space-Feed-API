@@ -4,4 +4,4 @@ uvicorn
 feedparser
 beautifulsoup4
 apscheduler
-pylint
+pytest

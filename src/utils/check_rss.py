@@ -25,13 +25,14 @@ def check_rss():
             logger.info("Erreur lors de la récupération du flux RSS : %s", flux.bozo_exception)
             return
 
-        for entree in reversed(flux.entries[9::-1]):
+        for entree in reversed(flux.entries[:10]):
             identifiant: str = entree.id
 
             if identifiant not in last_articles:
                 titre: str = entree.title
                 lien: str = entree.link
                 resume: str = entree.summary
+                print(entree.published)
                 html_content = entree.dc_content
                 soup = BeautifulSoup(html_content, 'html.parser')
 
@@ -44,8 +45,10 @@ def check_rss():
                     text=text
                 )
                 logger.info("Nouvel article : %s", titre)
-                if len(last_articles) > 10:
-                    last_articles.popitem(last=False)
+
+                while len(last_articles) > 10:
+                    oldest_key = next(iter(last_articles))
+                    del last_articles[oldest_key]
 
     except (AttributeError, KeyError) as e:
         logger.error("Une erreur s'est produite : %s", str(e))

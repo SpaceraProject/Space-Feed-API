@@ -21,7 +21,7 @@ INTERVAL:int = int(os.getenv("INTERVAL", "10"))
 scheduler.add_job(
     check_rss,
     'interval',
-    minutes=INTERVAL,
+    seconds=INTERVAL,
     id='update_articles',
     replace_existing=True
     )
